@@ -6,6 +6,8 @@ Hệ thống hỗ trợ các cấp bậc (nhân viên → trưởng phòng → g
 
 Ứng dụng được xây dựng bằng **ASP.NET Core MVC** và **SQL Server**, có thể triển khai trong mạng nội bộ hoặc public qua domain.
 
+<img width="1906" height="956" alt="image" src="https://github.com/user-attachments/assets/373953a1-a46c-4d82-b9bf-99cfa2c68602" />
+
 ---
 
 ## 🚀 Tính năng chính
