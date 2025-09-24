@@ -1,0 +1,503 @@
+@model List<QuanLy.Models.BaoCaoTuan>
+@{
+    ViewData["Title"] = "Thống kê nâng cao";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="card shadow-lg border-0 mt-3">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-chart-line"></i> Thống kê nâng cao</h4>
+            <a asp-action="ExportExcelNangCao" class="btn btn-success btn-sm">
+                <i class="fas fa-file-excel"></i> Xuất Excel
+            </a>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <!-- Bộ lọc tìm kiếm -->
+            <form method="get" class="row g-3 mb-4">
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Tuần</label>
+                    <select name="tuan" asp-items="ViewBag.TuanOptions" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Phòng ban</label>
+                    <select name="maPhongBan" asp-items="ViewBag.PhongBanOptions" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Mã nhân viên / Họ tên</label>
+                    <input type="text" name="maNhanVien" class="form-control" placeholder="Nhập mã hoặc tên nhân viên" />
+                    <small class="text-muted">Bạn có thể nhập thủ công hoặc chọn bên dưới</small>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Tiến độ</label>
+                    <select name="tienDo" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option value="Đã hoàn thành">Đã hoàn thành</option>
+                        <option value="Chưa hoàn thành">Chưa hoàn thành</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Lọc dữ liệu
+                    </button>
+                </div>
+            </form>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th>Tuần</th>
+                                <th>Từ ngày</th>
+                                <th>Đến ngày</th>
+                                <th>Mã NV</th>
+                                <th>Tên NV</th>
+                                <th>Mã Phòng ban</th>
+                                <th>Phòng ban</th>
+                                <th>Báo cáo cho</th>
+                                <th>Phòng Ban QLTT</th>
+                                <th>Nội dung</th>
+                                <th>Ngày hoàn thành</th>
+                                <th>TN chính</th>
+                                <th>TN hỗ trợ</th>
+                                <th>Ưu tiên</th>
+                                <th>Tiến độ</th>
+                                <th>Lí do chưa hoàn thành</th>
+                                <th>Hướng giải quyết</th>
+                                <th>Kết quả đạt được</th>
+                                <th>Ghi chú</th>
+                                <th>Thời gian nộp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var bc in Model)
+                            {
+                                foreach (var nd in bc.NoiDungs)
+                                {
+                                    <tr>
+                                        <td class="text-center">@bc.Tuan</td>
+                                        <td class="text-center">@bc.TuNgay.ToString("dd/MM/yyyy")</td>
+                                        <td class="text-center">@bc.DenNgay.ToString("dd/MM/yyyy")</td>
+                                        <td class="text-center">@bc.NguoiBaoCao?.MaNV</td>
+                                        <td>@bc.NguoiBaoCao?.HoTen</td>
+                                        <td class="text-center">@bc.NguoiBaoCao?.MaPhongBan</td>
+                                        <td class="text-center">@bc.NguoiBaoCao?.PhongBan?.TenPhongBan</td>
+                                        <td>@bc.BaoCaoCho?.HoTen (@bc.BaoCaoCho?.MaNV)</td>
+                                        <td>@bc.BaoCaoCho?.PhongBan?.MaPhongBan - @bc.BaoCaoCho?.PhongBan?.TenPhongBan</td>
+                                        <td class="text-wrap" style="max-width: 250px">@nd.NoiDung</td>
+                                        <td class="text-center">@nd.NgayHoanThanh?.ToString("dd/MM/yyyy")</td>
+                                        <td>@nd.TrachNhiemChinh</td>
+                                        <td>@nd.TrachNhiemHoTro</td>
+                                        <td class="text-center">
+                                            <span class="badge @(nd.MucDoUuTien == "A" ? "bg-danger" : nd.MucDoUuTien == "B" ? "bg-warning text-dark" : "bg-success")">
+                                                @nd.MucDoUuTien
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            @if (nd.TienDo == "Đã hoàn thành")
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check-circle"></i> @nd.TienDo
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-hourglass-half"></i> @nd.TienDo
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>@nd.LyDoChuaHoanThanh</td>
+                                        <td>@nd.HuongGiaiQuyet</td>
+                                        <td>@nd.KetQuaDatDuoc</td>
+                                        <td>@nd.GhiChu</td>
+                                        <td class="text-center">
+                                            @bc.NgayTao.ToString("HH:mm dd/MM/yyyy") <!-- 🆕 hiển thị giờ & ngày -->
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary text-center">
+                    <i class="fas fa-info-circle"></i> Chưa có dữ liệu cho bộ lọc đã chọn.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+==================================================================================
+
+modal có màu
+
+@model List<QuanLy.Models.BaoCaoTuan>
+@{
+    ViewData["Title"] = "Thống kê nâng cao";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int modalIndex = 0;
+}
+
+<div class="container">
+    <div class="card shadow-lg border-0 mt-3">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-chart-line"></i> Thống kê nâng cao</h4>
+            <a asp-action="ExportExcelNangCao" class="btn btn-success btn-sm">
+                <i class="fas fa-file-excel"></i> Xuất Excel
+            </a>
+        </div>
+
+        <div class="card-body">
+            <!-- Bộ lọc -->
+            <form method="get" class="row g-3 mb-4">
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Tuần</label>
+                    <select name="tuan" asp-items="ViewBag.TuanOptions" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Phòng ban</label>
+                    <select name="maPhongBan" asp-items="ViewBag.PhongBanOptions" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Mã NV / Họ tên</label>
+                    <input type="text" name="maNhanVien" class="form-control" placeholder="Nhập mã hoặc tên nhân viên" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Tiến độ</label>
+                    <select name="tienDo" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option value="Đã hoàn thành">Đã hoàn thành</option>
+                        <option value="Chưa hoàn thành">Chưa hoàn thành</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Lọc dữ liệu
+                    </button>
+                </div>
+            </form>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th>Tuần</th>
+                                <th>Mã NV</th>
+                                <th>Tên NV</th>
+                                <th>Phòng ban</th>
+                                <th>Ưu tiên</th>
+                                <th>Tiến độ</th>
+                                <th>Thời gian nộp</th>
+                                <th>Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var bc in Model)
+                            {
+                                foreach (var nd in bc.NoiDungs)
+                                {
+                                    modalIndex++;
+                                    <tr>
+                                        <td class="text-center">@bc.Tuan</td>
+                                        <td class="text-center">@bc.NguoiBaoCao?.MaNV</td>
+                                        <td>@bc.NguoiBaoCao?.HoTen</td>
+                                        <td>@bc.NguoiBaoCao?.PhongBan?.TenPhongBan</td>
+                                        <td class="text-center">
+                                            <span class="badge @(nd.MucDoUuTien == "A" ? "bg-danger" : nd.MucDoUuTien == "B" ? "bg-warning text-dark" : "bg-success")">
+                                                @nd.MucDoUuTien
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            @if (nd.TienDo == "Đã hoàn thành")
+                                            {
+                                                <span class="badge bg-success"><i class="fas fa-check-circle"></i> @nd.TienDo</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half"></i> @nd.TienDo</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">@bc.NgayTao.ToString("HH:mm dd/MM/yyyy")</td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detailModal-@modalIndex">
+                                                <i class="fas fa-eye"></i> Xem
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Modal Chi tiết -->
+                                    <div class="modal fade" id="detailModal-@modalIndex" tabindex="-1">
+                                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-primary text-white">
+                                                    <h5 class="modal-title"><i class="fas fa-info-circle"></i> Chi tiết báo cáo</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+
+                                                    <!-- Thông tin nhân sự -->
+                                                    <div class="bg-light p-3 mb-3 border-start border-3 border-primary rounded">
+                                                        <h6 class="fw-bold text-primary mb-2"><i class="fas fa-user"></i> Thông tin nhân sự</h6>
+                                                        <ul class="list-group list-group-flush">
+                                                            <li class="list-group-item"><strong>Tuần:</strong> @bc.Tuan</li>
+                                                            <li class="list-group-item"><strong>Nhân viên:</strong> @bc.NguoiBaoCao?.HoTen (@bc.NguoiBaoCao?.MaNV)</li>
+                                                            <li class="list-group-item"><strong>Phòng ban:</strong> @bc.NguoiBaoCao?.PhongBan?.TenPhongBan</li>
+                                                            <li class="list-group-item"><strong>Báo cáo cho:</strong> @bc.BaoCaoCho?.HoTen (@bc.BaoCaoCho?.MaNV)</li>
+                                                            <li class="list-group-item"><strong>Thời gian:</strong> @bc.TuNgay.ToString("dd/MM/yyyy") - @bc.DenNgay.ToString("dd/MM/yyyy")</li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <!-- Nội dung -->
+                                                    <div class="bg-light p-3 mb-3 border-start border-3 border-success rounded">
+                                                        <h6 class="fw-bold text-success mb-2"><i class="fas fa-tasks"></i> Nội dung công việc</h6>
+                                                        <ul class="list-group list-group-flush">
+                                                            <li class="list-group-item"><strong>Nội dung:</strong> @nd.NoiDung</li>
+                                                            <li class="list-group-item"><strong>Ngày hoàn thành:</strong> @nd.NgayHoanThanh?.ToString("dd/MM/yyyy")</li>
+                                                            <li class="list-group-item"><strong>Trách nhiệm chính:</strong> @nd.TrachNhiemChinh</li>
+                                                            <li class="list-group-item"><strong>Trách nhiệm hỗ trợ:</strong> @nd.TrachNhiemHoTro</li>
+                                                            <li class="list-group-item"><strong>Ưu tiên:</strong> @nd.MucDoUuTien</li>
+                                                            <li class="list-group-item"><strong>Tiến độ:</strong> @nd.TienDo</li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <!-- Kết quả -->
+                                                    <div class="bg-light p-3 border-start border-3 border-warning rounded">
+                                                        <h6 class="fw-bold text-warning mb-2"><i class="fas fa-clipboard-check"></i> Kết quả & Ghi chú</h6>
+                                                        <ul class="list-group list-group-flush">
+                                                            <li class="list-group-item"><strong>Lý do chưa hoàn thành:</strong> @nd.LyDoChuaHoanThanh</li>
+                                                            <li class="list-group-item"><strong>Hướng giải quyết:</strong> @nd.HuongGiaiQuyet</li>
+                                                            <li class="list-group-item"><strong>Kết quả đạt được:</strong> @nd.KetQuaDatDuoc</li>
+                                                            <li class="list-group-item"><strong>Ghi chú:</strong> @nd.GhiChu</li>
+                                                        </ul>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary text-center">
+                    <i class="fas fa-info-circle"></i> Chưa có dữ liệu cho bộ lọc đã chọn.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+=========================================================================
+
+MODAL fix nguyên bản + màu
+
+@model List<QuanLy.Models.BaoCaoTuan>
+@{
+    ViewData["Title"] = "Thống kê nâng cao";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int modalIndex = 0;
+}
+
+<div class="container">
+    <div class="card shadow-lg border-0 mt-3">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-chart-line"></i> Thống kê nâng cao</h4>
+            <a asp-action="ExportExcelNangCao" class="btn btn-success btn-sm">
+                <i class="fas fa-file-excel"></i> Xuất Excel
+            </a>
+        </div>
+
+        <div class="card-body">
+            <!-- Bộ lọc tìm kiếm -->
+            <form method="get" class="row g-3 mb-4">
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Tuần</label>
+                    <select name="tuan" asp-items="ViewBag.TuanOptions" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Phòng ban</label>
+                    <select name="maPhongBan" asp-items="ViewBag.PhongBanOptions" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Mã NV / Họ tên</label>
+                    <input type="text" name="maNhanVien" class="form-control" placeholder="Nhập mã hoặc tên nhân viên" />
+                    <small class="text-muted">Bạn có thể nhập thủ công hoặc chọn bên dưới</small>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Tiến độ</label>
+                    <select name="tienDo" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        <option value="Đã hoàn thành">Đã hoàn thành</option>
+                        <option value="Chưa hoàn thành">Chưa hoàn thành</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Lọc dữ liệu
+                    </button>
+                </div>
+            </form>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th>Tuần</th>
+                                <th>Từ ngày</th>
+                                <th>Đến ngày</th>
+                                <th>Mã NV</th>
+                                <th>Tên NV</th>
+                                <th>Phòng ban</th>
+                                <th>Báo cáo cho</th>
+                                <th>Thời gian nộp</th>
+                                <th>Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var bc in Model)
+                            {
+                                foreach (var nd in bc.NoiDungs)
+                                {
+                                    // **Khai báo biến id trực tiếp trong khối (không cần @{ ... })**
+                                    var id = modalIndex++;
+
+                                    <tr>
+                                        <td class="text-center">@bc.Tuan</td>
+                                        <td class="text-center">@bc.TuNgay.ToString("dd/MM/yyyy")</td>
+                                        <td class="text-center">@bc.DenNgay.ToString("dd/MM/yyyy")</td>
+                                        <td class="text-center">@bc.NguoiBaoCao?.MaNV</td>
+                                        <td>@bc.NguoiBaoCao?.HoTen</td>
+                                        <td class="text-center">@bc.NguoiBaoCao?.PhongBan?.TenPhongBan</td>
+                                        <td>@bc.BaoCaoCho?.HoTen (@bc.BaoCaoCho?.MaNV)</td>
+                                        <td class="text-center">@bc.NgayTao.ToString("HH:mm dd/MM/yyyy")</td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detailModal-@id">
+                                                <i class="fas fa-eye"></i> Xem
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Modal Chi tiết -->
+                                    <div class="modal fade" id="detailModal-@id" tabindex="-1">
+                                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-primary text-white">
+                                                    <h5 class="modal-title"><i class="fas fa-info-circle"></i> Chi tiết báo cáo</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+
+                                                    <!-- Thông tin nhân sự -->
+                                                    <div class="bg-light p-3 mb-3 border-start border-3 border-primary rounded">
+                                                        <h6 class="fw-bold text-primary mb-2"><i class="fas fa-user"></i> Thông tin nhân sự</h6>
+                                                        <ul class="list-group list-group-flush">
+                                                            <li class="list-group-item"><strong>Tuần:</strong> @bc.Tuan</li>
+                                                            <li class="list-group-item"><strong>Tên nhân viên:</strong> @bc.NguoiBaoCao?.HoTen (@bc.NguoiBaoCao?.MaNV)</li>
+                                                            <li class="list-group-item"><strong>Bộ Phận:</strong> @bc.NguoiBaoCao?.PhongBan?.TenPhongBan</li>
+                                                            <li class="list-group-item"><strong>Người QLTT:</strong> @bc.BaoCaoCho?.HoTen (@bc.BaoCaoCho?.MaNV)</li>
+                                                            <li class="list-group-item"><strong>BP QLTT:</strong> @bc.BaoCaoCho?.PhongBan?.MaPhongBan - @bc.BaoCaoCho?.PhongBan?.TenPhongBan</li>
+                                                            <li class="list-group-item"><strong>Thời gian:</strong> @bc.TuNgay.ToString("dd/MM/yyyy") - @bc.DenNgay.ToString("dd/MM/yyyy")</li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <!-- Nội dung -->
+                                                    <div class="bg-light p-3 mb-3 border-start border-3 border-success rounded">
+                                                        <h6 class="fw-bold text-success mb-2"><i class="fas fa-tasks"></i> Nội dung công việc</h6>
+                                                        <ul class="list-group list-group-flush">
+                                                            <li class="list-group-item"><strong>Nội dung:</strong> @nd.NoiDung</li>
+                                                            <li class="list-group-item"><strong>Ngày hoàn thành:</strong> @nd.NgayHoanThanh?.ToString("dd/MM/yyyy")</li>
+                                                            <li class="list-group-item"><strong>Trách nhiệm chính:</strong> @nd.TrachNhiemChinh</li>
+                                                            <li class="list-group-item"><strong>Trách nhiệm hỗ trợ:</strong> @nd.TrachNhiemHoTro</li>
+                                                            <li class="list-group-item"><strong>Mức độ ưu tiên:</strong>
+                                                                <span class="badge @(nd.MucDoUuTien == "A" ? "bg-danger" : nd.MucDoUuTien == "B" ? "bg-warning text-dark" : "bg-success")">
+                                                                    @nd.MucDoUuTien
+                                                                </span>
+                                                            </li>
+                                                            <li class="list-group-item"><strong>Tiến độ:</strong>
+                                                                @if (nd.TienDo == "Đã hoàn thành")
+                                                                {
+                                                                    <span class="badge bg-success"><i class="fas fa-check-circle"></i> @nd.TienDo</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half"></i> @nd.TienDo</span>
+                                                                }
+                                                            </li>
+                                                            <li class="list-group-item"><strong>Lý do chưa hoàn thành:</strong> @nd.LyDoChuaHoanThanh</li>
+                                                            <li class="list-group-item"><strong>Hướng giải quyết:</strong> @nd.HuongGiaiQuyet</li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <!-- Kết quả -->
+                                                    <div class="bg-light p-3 border-start border-3 border-danger rounded">
+                                                        <h6 class="fw-bold text-danger mb-2"><i class="fas fa-clipboard-check"></i> Kết quả & Ghi chú</h6>
+                                                        <ul class="list-group list-group-flush">
+                                                            <li class="list-group-item"><strong>Kết quả đạt được:</strong> @nd.KetQuaDatDuoc</li>
+                                                            <li class="list-group-item"><strong>Ghi chú:</strong> @nd.GhiChu</li>
+                                                            <li class="list-group-item"><strong>Thời gian nộp:</strong> @bc.NgayTao.ToString("HH:mm dd/MM/yyyy")</li>
+                                                        </ul>
+                                                    </div>
+
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                        <i class="fas fa-times"></i> Đóng
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary text-center">
+                    <i class="fas fa-info-circle"></i> Chưa có dữ liệu cho bộ lọc đã chọn.
+                </div>
+            }
+        </div>
+    </div>
+</div>

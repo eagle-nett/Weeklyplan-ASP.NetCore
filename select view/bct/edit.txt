@@ -1,0 +1,150 @@
+@model QuanLy.ViewModels.BaoCaoTuanViewModel
+
+@{
+    ViewData["Title"] = "Chỉnh sửa báo cáo tuần";
+}
+
+<h2 class="mb-4 text-primary">Chỉnh sửa báo cáo tuần</h2>
+
+<style>
+    textarea.form-control {
+        resize: vertical; /* cho phép kéo cao nếu muốn */
+        min-height: 80px;
+    }
+</style>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row">
+        <!-- Chọn mã phòng ban -->
+        <div class="col-md-4 mb-3">
+            <label asp-for="MaPhongBan" class="form-label"></label>
+            <select asp-for="MaPhongBan" asp-items="Model.DanhSachPhongBan" class="form-control" onchange="this.form.submit()"></select>
+            <span asp-validation-for="MaPhongBan" class="text-danger"></span>
+        </div>
+
+        <!-- Chọn người nhận -->
+        <div class="col-md-4 mb-3">
+            <label asp-for="BaoCaoChoId" class="form-label"></label>
+            <select asp-for="BaoCaoChoId" asp-items="Model.DanhSachNguoiNhan" class="form-control"></select>
+            <span asp-validation-for="BaoCaoChoId" class="text-danger"></span>
+        </div>
+
+        <!-- Chọn tuần -->
+        <div class="col-md-4 mb-3">
+            <label asp-for="Tuan" class="form-label"></label>
+            <select asp-for="Tuan" asp-items="Model.TuanOptions" class="form-control"></select>
+            <span asp-validation-for="Tuan" class="text-danger"></span>
+            @if (Model.TuNgay != default)
+            {
+                <small class="form-text text-muted">
+                    Từ @Model.TuNgay.ToString("dd/MM/yyyy") đến @Model.DenNgay.ToString("dd/MM/yyyy")
+                </small>
+            }
+        </div>
+    </div>
+
+    <!-- Bảng nội dung báo cáo -->
+    <div class="card mt-4 shadow">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Nội dung báo cáo</h5>
+        </div>
+        <div class="card-body p-0">
+            <div style="overflow-x: auto;">
+                <table class="table table-bordered m-0" style="min-width:1600px;">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width: 280px">Nội dung</th>
+                            <th style="width: 120px">Ngày hoàn thành</th>
+                            <th style="width: 150px">Trách nhiệm chính</th>
+                            <th style="width: 150px">Trách nhiệm hỗ trợ</th>
+                            <th style="width: 90px">Ưu tiên</th>
+                            <th style="width: 120px">Tiến độ</th>
+                            <th style="width: 250px">Kết quả đạt được</th>
+                            <th style="width: 250px">Lý do chưa hoàn thành</th>
+                            <th style="width: 250px">Hướng giải quyết</th>
+                            <th style="width: 200px">Ghi chú</th>
+                            <th style="width: 60px">Xóa</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (int i = 0; i < Model.NoiDungs.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <textarea asp-for="@Model.NoiDungs[i].NoiDung" class="form-control" rows="4"></textarea>
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.NoiDungs[i].NgayHoanThanh" type="date" class="form-control" />
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.NoiDungs[i].TrachNhiemChinh" class="form-control" />
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.NoiDungs[i].TrachNhiemHoTro" class="form-control" />
+                                </td>
+                                <td>
+                                    <select asp-for="@Model.NoiDungs[i].MucDoUuTien" class="form-control">
+                                        <option value="">--</option>
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select asp-for="@Model.NoiDungs[i].TienDo" class="form-control">
+                                        <option value="">--</option>
+                                        <option value="Đã hoàn thành">Đã hoàn thành</option>
+                                        <option value="Chưa hoàn thành">Chưa hoàn thành</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <textarea asp-for="@Model.NoiDungs[i].KetQuaDatDuoc" class="form-control" rows="4"></textarea>
+                                </td>
+                                <td>
+                                    <textarea asp-for="@Model.NoiDungs[i].LyDoChuaHoanThanh" class="form-control" rows="4"></textarea>
+                                </td>
+                                <td>
+                                    <textarea asp-for="@Model.NoiDungs[i].HuongGiaiQuyet" class="form-control" rows="4"></textarea>
+                                </td>
+                                <td>
+                                    <textarea asp-for="@Model.NoiDungs[i].GhiChu" class="form-control" rows="4"></textarea>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <button type="submit" name="removeRow" value="@i" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer text-end">
+            <button type="submit" name="addRow" class="btn btn-outline-primary">
+                <i class="fas fa-plus"></i> Thêm dòng
+            </button>
+        </div>
+    </div>
+
+    <!-- Nút hành động -->
+    <div class="mt-4 text-end">
+        <a asp-action="XemLai" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> Lưu chỉnh sửa
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

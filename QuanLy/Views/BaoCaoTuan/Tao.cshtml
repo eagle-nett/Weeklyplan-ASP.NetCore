@@ -1,0 +1,231 @@
+﻿@model QuanLy.ViewModels.BaoCaoTuanViewModel
+
+@{
+    ViewData["Title"] = "Tạo báo cáo tuần";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary">📝 @ViewData["Title"]</h2>
+
+    <style>
+        textarea.form-control {
+            min-height: 60px;
+            resize: vertical;
+        }
+    </style>
+
+    @if (ViewData["ThongBaoTrungTuan"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle"></i> @ViewData["ThongBaoTrungTuan"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+        </div>
+    }
+
+    <form asp-action="Tao" method="post">
+        <!-- Thông tin chung -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                Thông tin chung
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">👤 Người báo cáo</label>
+                    <input asp-for="HoTenNguoiBaoCao" class="form-control" readonly />
+                    <input asp-for="NguoiBaoCaoId" type="hidden" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">🏢 Mã phòng ban</label>
+                    <select asp-for="MaPhongBan" asp-items="Model.DanhSachPhongBan" class="form-select"
+                            onchange="this.form.submit()">
+                        <option value="">-- Chọn phòng ban --</option>
+                    </select>
+                    <span asp-validation-for="MaPhongBan" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">👨‍💼 Quản lý trực tiếp</label>
+                    <select asp-for="BaoCaoChoId" asp-items="Model.DanhSachNguoiNhan" class="form-select">
+                        <option value="">-- Chọn người nhận --</option>
+                    </select>
+                    <span asp-validation-for="BaoCaoChoId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">📅 Tuần báo cáo</label>
+                    <select asp-for="Tuan" asp-items="Model.TuanOptions" class="form-select">
+                        <option value="">-- Chọn tuần --</option>
+                    </select>
+                    <span asp-validation-for="Tuan" class="text-danger"></span>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col">
+                        <label class="form-label">Từ ngày</label>
+                        <input asp-for="TuNgay" type="date" class="form-control" />
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Đến ngày</label>
+                        <input asp-for="DenNgay" type="date" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <hr />
+    <h4 class="mb-3">Nội dung báo cáo</h4>
+
+    <div class="mb-2">
+        <button type="submit" name="addRow" class="btn btn-sm btn-secondary w-100 w-md-auto">+ Thêm dòng</button>
+    </div>
+
+    <!-- Desktop: hiển thị dạng bảng -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light text-center">
+                <tr>
+                    <th>STT</th>
+                    <th>Nội dung</th>
+                    <th>Ngày hoàn thành</th>
+                    <th>TN chính</th>
+                    <th>TN hỗ trợ</th>
+                    <th>Ưu tiên</th>
+                    <th>Tiến độ</th>
+                    <th>Lý do chưa hoàn thành</th>
+                    <th>Hướng giải quyết</th>
+                    <th>Kết quả đạt được</th>
+                    <th>Ghi chú</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.NoiDungs == null || Model.NoiDungs.Count == 0)
+                {
+                    Model.NoiDungs = new List<QuanLy.ViewModels.NoiDungBaoCaoViewModel> { new QuanLy.ViewModels.NoiDungBaoCaoViewModel() };
+                }
+
+                @for (int i = 0; i < Model.NoiDungs.Count; i++)
+                {
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>
+                            <textarea asp-for="NoiDungs[@i].NoiDung" rows="5" class="form-control"></textarea>
+                            <span asp-validation-for="NoiDungs[@i].NoiDung" class="text-danger"></span>
+                        </td>
+                        <td><input asp-for="NoiDungs[@i].NgayHoanThanh" type="date" class="form-control" /></td>
+                        <td>
+                            <input asp-for="NoiDungs[@i].TrachNhiemChinh" class="form-control" />
+                            <span asp-validation-for="NoiDungs[@i].TrachNhiemChinh" class="text-danger"></span>
+                        </td>
+                        <td><input asp-for="NoiDungs[@i].TrachNhiemHoTro" class="form-control" /></td>
+                        <td>
+                            <select asp-for="NoiDungs[@i].MucDoUuTien" class="form-select">
+                                <option value="">-- Chọn --</option>
+                                <option>A</option>
+                                <option>B</option>
+                                <option>C</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select asp-for="NoiDungs[@i].TienDo" class="form-select">
+                                <option value="">-- Chọn --</option>
+                                <option>Đã hoàn thành</option>
+                                <option>Chưa hoàn thành</option>
+                            </select>
+                        </td>
+                        <td><textarea asp-for="NoiDungs[@i].LyDoChuaHoanThanh" rows="4" class="form-control"></textarea></td>
+                        <td><textarea asp-for="NoiDungs[@i].HuongGiaiQuyet" rows="2" class="form-control"></textarea></td>
+                        <td><textarea asp-for="NoiDungs[@i].KetQuaDatDuoc" rows="2" class="form-control"></textarea></td>
+                        <td><textarea asp-for="NoiDungs[@i].GhiChu" rows="2" class="form-control"></textarea></td>
+                        <td class="text-center">
+                            <button type="submit" name="removeRow" value="@i" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Xóa dòng này?');">
+                                Xóa
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile: hiển thị dạng card -->
+    <div class="d-block d-md-none">
+        @for (int i = 0; i < Model.NoiDungs.Count; i++)
+        {
+            <div class="border rounded p-3 mb-3 shadow-sm">
+                <div class="fw-bold mb-2">Nhiệm vụ @(i + 1)</div>
+                <div class="mb-2">
+                    <label>Nội dung</label>
+                    <textarea asp-for="NoiDungs[@i].NoiDung" rows="3" class="form-control"></textarea>
+                </div>
+                <div class="mb-2">
+                    <label>Ngày hoàn thành</label>
+                    <input asp-for="NoiDungs[@i].NgayHoanThanh" type="date" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label>Trách nhiệm chính</label>
+                    <input asp-for="NoiDungs[@i].TrachNhiemChinh" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label>Trách nhiệm hỗ trợ</label>
+                    <input asp-for="NoiDungs[@i].TrachNhiemHoTro" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label>Ưu tiên</label>
+                    <select asp-for="NoiDungs[@i].MucDoUuTien" class="form-select">
+                        <option value="">-- Chọn --</option>
+                        <option>A</option>
+                        <option>B</option>
+                        <option>C</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label>Tiến độ</label>
+                    <select asp-for="NoiDungs[@i].TienDo" class="form-select">
+                        <option value="">-- Chọn --</option>
+                        <option>Đã hoàn thành</option>
+                        <option>Chưa hoàn thành</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label>Lý do chưa hoàn thành</label>
+                    <textarea asp-for="NoiDungs[@i].LyDoChuaHoanThanh" rows="2" class="form-control"></textarea>
+                </div>
+                <div class="mb-2">
+                    <label>Hướng giải quyết</label>
+                    <textarea asp-for="NoiDungs[@i].HuongGiaiQuyet" rows="2" class="form-control"></textarea>
+                </div>
+                <div class="mb-2">
+                    <label>Kết quả đạt được</label>
+                    <textarea asp-for="NoiDungs[@i].KetQuaDatDuoc" rows="2" class="form-control"></textarea>
+                </div>
+                <div class="mb-2">
+                    <label>Ghi chú</label>
+                    <textarea asp-for="NoiDungs[@i].GhiChu" rows="2" class="form-control"></textarea>
+                </div>
+                <div class="text-end">
+                    <button type="submit" name="removeRow" value="@i" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Xóa dòng này?');">
+                        Xóa
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <div class="d-flex flex-column flex-md-row justify-content-between mt-4 gap-2">
+        <button type="submit" class="btn btn-primary w-100 w-md-auto">Gửi báo cáo</button>
+        <a asp-action="Index" class="btn btn-outline-primary w-100 w-md-auto"> Quay lại</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

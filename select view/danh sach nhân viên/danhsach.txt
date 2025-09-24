@@ -1,0 +1,386 @@
+@{
+    ViewData["Title"] = "Danh sách nhân viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var users = ViewBag.Users as List<dynamic>;
+}
+
+<style>
+    .table-custom {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+        .table-custom th {
+            background: linear-gradient(45deg, #4f46e5, #6d28d9);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .table-custom td, .table-custom th {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+
+        .table-custom tr:hover {
+            background: #f3f4f6;
+        }
+</style>
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <table class="table table-bordered table-custom">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã NV</th>
+                <th>Họ tên</th>
+                <th>Điện thoại</th>
+                <th>Chức vụ</th>
+                <th>Chức danh</th>
+                <th>Tài khoản</th>
+                <th>Công ty</th>
+                <th>Phòng ban</th>
+                <th>Ghi chú</th>
+                <th>Quyền</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (users != null && users.Count > 0)
+            {
+                int stt = 1;
+                foreach (var u in users)
+                {
+                    <tr>
+                        <td>@stt</td>
+                        <td>@u.MaNV</td>
+                        <td>@u.HoTen</td>
+                        <td>@u.DienThoai</td>
+                        <td>@u.ChucVu</td>
+                        <td>@u.ChucDanh</td>
+                        <td>@u.UserName</td>
+                        <td>@u.TenCongTy</td>
+                        <td>@u.TenPhongBan</td>
+                        <td>@u.GhiChu</td>
+                        <td>@u.Roles</td>
+                        <td>
+                            <a asp-action="ChinhSua" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Sửa</a>
+                            <a asp-action="Xoa" asp-route-id="@u.Id" class="btn btn-sm btn-danger">Xóa</a>
+                            <a asp-action="ResetPassword" asp-route-id="@u.Id" class="btn btn-sm btn-danger">
+                                Reset mật khẩu
+                            </a>
+
+                        </td>
+                    </tr>
+                    stt++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="12" class="text-center text-danger">Không có dữ liệu nhân viên.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+=================================================================================================
+
+@{
+    ViewData["Title"] = "Danh sách nhân viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var users = ViewBag.Users as List<dynamic>;
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white rounded-top-4 d-flex justify-content-between align-items-center"
+             style="background: linear-gradient(135deg, #4f46e5, #6d28d9);">
+            <h4 class="mb-0"><i class="fas fa-users me-2"></i> @ViewData["Title"]</h4>
+            <a asp-action="DangKy" class="btn btn-light btn-sm rounded-pill shadow-sm">
+                <i class="fas fa-user-plus me-1"></i> Thêm nhân viên
+            </a>
+        </div>
+
+        <div class="card-body">
+            <!-- Search -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <input type="text" id="searchBox" class="form-control rounded-pill shadow-sm"
+                           placeholder="🔍 Tìm kiếm nhân viên...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle table-hover">
+                    <thead class="text-white"
+                           style="background: linear-gradient(45deg, #4f46e5, #6d28d9);">
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã NV</th>
+                            <th>Họ tên</th>
+                            <th>Điện thoại</th>
+                            <th>Chức vụ</th>
+                            <th>Chức danh</th>
+                            <th>Tài khoản</th>
+                            <th>Công ty</th>
+                            <th>Phòng ban</th>
+                            <th>Ghi chú</th>
+                            <th>Quyền</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTable">
+                        @if (users != null && users.Count > 0)
+                        {
+                            int stt = 1;
+                            foreach (var u in users)
+                            {
+                                <tr>
+                                    <td>@stt</td>
+                                    <td>@u.MaNV</td>
+                                    <td>@u.HoTen</td>
+                                    <td>@u.DienThoai</td>
+                                    <td>@u.ChucVu</td>
+                                    <td>@u.ChucDanh</td>
+                                    <td>@u.UserName</td>
+                                    <td>@u.TenCongTy</td>
+                                    <td>@u.TenPhongBan</td>
+                                    <td>@u.GhiChu</td>
+                                    <td>
+                                        <span class="badge bg-gradient"
+                                              style="background: linear-gradient(45deg, #06b6d4, #3b82f6);">
+                                            @u.Roles
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-action="ChinhSua" asp-route-id="@u.Id"
+                                           class="btn btn-sm btn-outline-warning rounded-pill me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Xoa" asp-route-id="@u.Id"
+                                           class="btn btn-sm btn-outline-danger rounded-pill me-1">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                        <a asp-action="ResetPassword" asp-route-id="@u.Id"
+                                           class="btn btn-sm btn-outline-primary rounded-pill">
+                                            <i class="fas fa-key"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                stt++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="12" class="text-center text-danger fw-bold">
+                                    Không có dữ liệu nhân viên.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS -->
+<style>
+    .card {
+        border-radius: 16px;
+    }
+
+    .table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f9fafb;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-outline-warning:hover {
+        background-color: #f59e0b;
+        color: white;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #dc2626;
+        color: white;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #2563eb;
+        color: white;
+    }
+</style>
+
+<!-- Script search -->
+<script>
+    document.getElementById("searchBox").addEventListener("keyup", function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#userTable tr");
+
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+</script>
+
+
+==========================================================================================
+@{
+    ViewData["Title"] = "Danh sách nhân viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var users = ViewBag.Users as List<dynamic>;
+}
+
+<style>
+    .employee-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .employee-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+    .employee-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 22px;
+        color: #4f46e5;
+    }
+
+    .filter-bar {
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
+
+    <!-- Bộ lọc và tìm kiếm -->
+    <div class="row filter-bar">
+        <div class="col-md-4 mb-2">
+            <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên, mã NV, tài khoản..." />
+        </div>
+        <div class="col-md-3 mb-2">
+            <select id="filterPhongBan" class="form-select">
+                <option value="">-- Lọc theo phòng ban --</option>
+                @if (users != null)
+                {
+                    var phongBans = users.Select(u => (string)u.TenPhongBan).Distinct().OrderBy(p => p);
+                    foreach (var pb in phongBans)
+                    {
+                        <option value="@pb">@pb</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-3 mb-2">
+            <select id="filterCongTy" class="form-select">
+                <option value="">-- Lọc theo công ty --</option>
+                @if (users != null)
+                {
+                    var ctys = users.Select(u => (string)u.TenCongTy).Distinct().OrderBy(c => c);
+                    foreach (var cty in ctys)
+                    {
+                        <option value="@cty">@cty</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- Card grid -->
+    <div class="row" id="employeeContainer">
+        @if (users != null && users.Count > 0)
+        {
+            foreach (var u in users)
+            {
+                <div class="col-md-3 mb-4 employee-card-wrapper"
+                     data-ten="@u.HoTen"
+                     data-ma="@u.MaNV"
+                     data-username="@u.UserName"
+                     data-phongban="@u.TenPhongBan"
+                     data-congty="@u.TenCongTy">
+                    <div class="card employee-card h-100 p-3">
+                        <div class="text-center mb-3">
+                            <div class="employee-avatar">@u.HoTen.Substring(0, 1).ToUpper()</div>
+                        </div>
+                        <h5 class="text-center">@u.HoTen</h5>
+                        <p class="text-muted text-center mb-1">Mã NV: @u.MaNV</p>
+                        <p class="text-muted text-center mb-1">@u.ChucVu - @u.ChucDanh</p>
+                        <p class="text-muted text-center mb-1">Phòng: @u.TenPhongBan</p>
+                        <p class="text-muted text-center mb-1">Công ty: @u.TenCongTy</p>
+                        <p class="text-muted text-center">Quyền: @u.Roles</p>
+
+                        <div class="d-flex justify-content-center gap-2 mt-2">
+                            <a asp-action="ChinhSua" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Sửa</a>
+                            <a asp-action="Xoa" asp-route-id="@u.Id" class="btn btn-sm btn-danger">Xóa</a>
+                            <a asp-action="ResetPassword" asp-route-id="@u.Id" class="btn btn-sm btn-secondary">Reset</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-danger text-center">Không có dữ liệu nhân viên.</p>
+        }
+    </div>
+</div>
+
+<script>
+    const searchInput = document.getElementById("searchInput");
+    const filterPhongBan = document.getElementById("filterPhongBan");
+    const filterCongTy = document.getElementById("filterCongTy");
+    const employees = document.querySelectorAll(".employee-card-wrapper");
+
+    function filterEmployees() {
+        const search = searchInput.value.toLowerCase();
+        const phongban = filterPhongBan.value;
+        const congty = filterCongTy.value;
+
+        employees.forEach(card => {
+            const ten = card.dataset.ten.toLowerCase();
+            const ma = card.dataset.ma.toLowerCase();
+            const username = card.dataset.username.toLowerCase();
+            const pb = card.dataset.phongban;
+            const ct = card.dataset.congty;
+
+            const matchSearch = ten.includes(search) || ma.includes(search) || username.includes(search);
+            const matchPhongBan = phongban === "" || pb === phongban;
+            const matchCongTy = congty === "" || ct === congty;
+
+            if (matchSearch && matchPhongBan && matchCongTy) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+
+    searchInput.addEventListener("input", filterEmployees);
+    filterPhongBan.addEventListener("change", filterEmployees);
+    filterCongTy.addEventListener("change", filterEmployees);
+</script>

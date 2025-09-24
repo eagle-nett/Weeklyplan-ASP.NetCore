@@ -1,0 +1,207 @@
+@ _Layout.cshtml @
+!DOCTYPE html
+html lang=vi
+head
+    meta charset=utf-8 
+    meta name=viewport content=width=device-width, initial-scale=1.0 
+    title@ViewData[Title] - Hệ Thống Quản Lýtitle
+
+    link href=~libbootstrapdistcssbootstrap.min.css rel=stylesheet 
+    link href=~csssite.css rel=stylesheet 
+    link rel=stylesheet href=httpscdnjs.cloudflare.comajaxlibsfont-awesome6.4.0cssall.min.css 
+
+    style
+        body {
+            display flex;
+            flex-direction column;
+            min-height 100vh;
+            background #f8fafc;
+        }
+
+         HEADER 
+        header.navbar {
+            background #ffffff;
+            border-bottom 1px solid #e5e7eb;
+            box-shadow 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        header .navbar-brand img {
+            height 36px;
+            margin-right 8px;
+        }
+
+         SIDEBAR 
+        .sidebar {
+            width 240px;
+            background #fff;
+            border-right 1px solid #e5e7eb;
+            min-height calc(100vh - 56px);
+            position fixed;
+            top 56px;
+            left 0;
+            padding 1rem;
+        }
+
+            .sidebar small {
+                display block;
+                margin 0.5rem 0 0.25rem;
+                font-size 0.75rem;
+                font-weight 700;
+                color #6b7280;
+            }
+
+            .sidebar .nav-link {
+                display flex;
+                align-items center;
+                font-weight 500;
+                padding 0.6rem 0.9rem;
+                color #374151;
+                border-radius 8px;
+                transition all 0.2s ease;
+            }
+
+                .sidebar .nav-link i {
+                    width 20px;
+                    text-align center;
+                    margin-right 8px;
+                    color #16a34a;
+                }
+
+                .sidebar .nav-linkhover {
+                    background-color #ecfdf5;
+                    color #15803d;
+                    transform translateX(2px);
+                }
+
+         MAIN CONTENT 
+        .content {
+            margin-left 240px;
+            padding 1.5rem;
+            flex-grow 1;
+        }
+
+        footer {
+            background #fff;
+            border-top 1px solid #ddd;
+            text-align center;
+            padding 0.5rem;
+        }
+    style
+head
+body
+    @{
+        var isAuthenticated = User.Identity.IsAuthenticated == true;
+        var isAdmin = User.IsInRole(Admin);
+        var isManager = User.IsInRole(TruongPhong)  User.IsInRole(GiamDoc);
+        var isVip = User.IsInRole(GiamDoc)  User.IsInRole(Admin);
+    }
+
+    !-- HEADER --
+    header class=navbar navbar-expand-lg
+        div class=container-fluid
+            a class=navbar-brand d-flex align-items-center href=
+                img src=~imageslogo.png alt=Logo  !-- logo công ty --
+                span class=fw-bold text-primaryHỆ THỐNG QUẢN LÝspan
+            a
+
+            div class=d-flex align-items-center
+                @if (isAuthenticated)
+                {
+                    span class=me-3 text-dark
+                        👤 strong@User.Identity.Namestrong
+                    span
+                    form method=post asp-controller=TaiKhoan asp-action=DangXuat class=d-inline
+                        button class=btn btn-outline-primary btn-sm rounded-pill
+                            i class=fas fa-sign-out-alti Đăng xuất
+                        button
+                    form
+                }
+                else
+                {
+                    a class=btn btn-primary btn-sm rounded-pill asp-controller=TaiKhoan asp-action=DangNhap
+                        i class=fas fa-sign-in-alti Đăng nhập
+                    a
+                }
+            div
+        div
+    header
+
+    !-- SIDEBAR --
+    nav class=sidebar
+        smallChungsmall
+        ul class=nav flex-column mb-3
+            li class=nav-item
+                a class=nav-link href=i class=fas fa-homeiTrang chủa
+            li
+            @if (isAuthenticated)
+            {
+                li class=nav-item
+                    a class=nav-link asp-controller=BaoCaoTuan asp-action=Index
+                        i class=fas fa-calendar-weekiBáo cáo tuần
+                    a
+                li
+                li class=nav-item
+                    a class=nav-link asp-controller=BaoCaoTuan asp-action=TrangThai
+                        i class=fas fa-chart-bariTrạng thái
+                    a
+                li
+                @if (isVip)
+                {
+                    li class=nav-item
+                        a class=nav-link asp-controller=BaoCaoTuan asp-action=ThongKeNangCao
+                            i class=fas fa-chart-pieiLọc nâng cao
+                        a
+                    li
+                }
+            }
+        ul
+
+        @if (isAuthenticated && (isAdmin  isManager))
+        {
+            smallQuản lý nhân sựsmall
+            ul class=nav flex-column mb-3
+                li class=nav-item
+                    a class=nav-link asp-controller=TaiKhoan asp-action=DangKy
+                        i class=fas fa-user-plusiTạo nhân viên
+                    a
+                li
+                li class=nav-item
+                    a class=nav-link asp-controller=TaiKhoan asp-action=DanhSach
+                        i class=fas fa-usersiDanh sách nhân viên
+                    a
+                li
+            ul
+        }
+
+        @if (isAuthenticated && isAdmin)
+        {
+            smallQuản trịsmall
+            ul class=nav flex-column
+                li class=nav-item
+                    a class=nav-link asp-controller=PhongBan asp-action=Index
+                        i class=fas fa-buildingiPhòng ban
+                    a
+                li
+                li class=nav-item
+                    a class=nav-link asp-controller=TaiKhoan asp-action=TaoAdmin
+                        i class=fas fa-user-shieldiTạo Admin
+                    a
+                li
+            ul
+        }
+    nav
+
+    !-- MAIN CONTENT --
+    main class=content
+        @RenderBody()
+    main
+
+    !-- FOOTER --
+    footer
+        © @DateTime.Now.Year - Hệ thống báo cáo tuần Lâm Hiệp Hưng
+    footer
+
+    script src=~libbootstrapdistjsbootstrap.bundle.min.jsscript
+    @RenderSection(Scripts, required false)
+body
+html

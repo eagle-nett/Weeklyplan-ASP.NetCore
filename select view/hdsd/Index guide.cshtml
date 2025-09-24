@@ -1,0 +1,799 @@
+﻿@{
+    ViewData["Title"] = "Hướng dẫn sử dụng - Báo cáo tuần";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@* /* --- STYLE NHẸ NHÀNG (sử dụng Bootstrap 5) --- */ *@
+<style>
+    body {
+        background: #f6f7fb;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .card-guide {
+        border-radius: 14px;
+        border: none;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+        background: #fff;
+    }
+
+    .toc {
+        position: sticky;
+        top: 100px;
+    }
+
+        .toc .nav-link {
+            color: #495057;
+            border-radius: 8px;
+            padding: .5rem .75rem;
+        }
+
+            .toc .nav-link.active {
+                background: linear-gradient(90deg,#e9f2ff,#f7fbff);
+                color: #0b5ed7;
+                font-weight: 600;
+            }
+
+    .step-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef6ff;
+        color: #0b5ed7;
+        font-weight: 700;
+        margin-right: .75rem;
+    }
+
+    pre.template {
+        background: #0f1724;
+        color: #e6eef8;
+        padding: 16px;
+        border-radius: 8px;
+        overflow: auto;
+        font-size: 13px;
+    }
+
+    .muted-note {
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .hint {
+        font-size: 13px;
+        color: #5b616a;
+        background: #f8f9fb;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #eef1f4;
+    }
+
+    .btn-ghost {
+        background: transparent;
+        border: 1px solid #e6e9ee;
+        border-radius: 8px;
+        padding: 7px 12px;
+    }
+</style>
+
+<div class="container mt-4 mb-5">
+    <div class="row g-4">
+        <!-- TOC / Sidebar -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="card card-guide p-3 toc">
+                <h6 class="mb-3 fw-bold">Mục lục</h6>
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="#overview">Tổng quan</a>
+                    <a class="nav-link" href="#create">1. Tạo báo cáo tuần</a>
+                    <a class="nav-link" href="#viewedit">2. Xem & Sửa báo cáo</a>
+                    <a class="nav-link" href="#rules">3. Quy tắc & Mẹo</a>
+                    <a class="nav-link" href="#template">4. Mẫu (copy/download)</a>
+                    <a class="nav-link" href="#logout">5. Đăng xuất an toàn</a>
+                    <a class="nav-link" href="#faq">FAQ & Khắc phục</a>
+                    <a class="nav-link" href="#support">Liên hệ hỗ trợ</a>
+                </nav>
+
+                <hr />
+
+                <div class="d-grid gap-2">
+                    <a asp-controller="BaoCao" asp-action="Create" class="btn btn-primary btn-sm">Tạo báo cáo mới</a>
+                    <a asp-controller="BaoCao" asp-action="Index" class="btn btn-outline-secondary btn-sm">Danh sách báo cáo</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-lg-9">
+            <div class="card card-guide p-4 mb-4" id="overview">
+                <div class="d-flex align-items-start">
+                    <div class="me-3">
+                        <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#f0f7ff,#ffffff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#0b5ed7">KB</div>
+                    </div>
+                    <div>
+                        <h4 class="mb-1">Hướng dẫn sử dụng — Báo cáo tuần</h4>
+                        <p class="muted-note mb-2">Trang này hướng dẫn chi tiết cho nhân viên cách tạo, sửa, xem báo cáo tuần và quy trình đăng xuất an toàn. Thực hiện theo trình tự: <strong>Đăng nhập → Tạo báo cáo → Gửi → (Nếu cần) Chỉnh sửa → Đăng xuất</strong>.</p>
+
+                        <div class="hint mb-2">
+                            <strong>Khuyến nghị:</strong> Dùng Chrome/Edge, tải lên file đính kèm nhỏ hơn 10MB. Lưu nháp thường xuyên trước khi gửi.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CREATE -->
+            <div class="card card-guide p-4 mb-4" id="create">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-badge">1</div>
+                    <h5 class="mb-0">Tạo báo cáo tuần</h5>
+                </div>
+
+                <ol>
+                    <li>
+                        <strong>Vào trang tạo báo cáo:</strong>
+                        <div class="mt-1 mb-2">
+                            <a asp-controller="BaoCao" asp-action="Create" class="btn btn-primary btn-sm">Mở form Tạo báo cáo</a>
+                        </div>
+                    </li>
+
+                    <li class="mt-3">
+                        <strong>Các trường cần điền (gợi ý):</strong>
+                        <ul>
+                            <li><strong>Tiêu đề:</strong> Báo cáo tuần - Tuần XX - [Họ tên]</li>
+                            <li><strong>Thời gian:</strong> Từ ngày — đến ngày (vd: 2025-09-15 → 2025-09-21)</li>
+                            <li><strong>Công việc đã hoàn thành:</strong> Mỗi công việc 1 bullet, ghi rõ kết quả / KPI nếu có.</li>
+                            <li><strong>Kế hoạch tuần sau:</strong> Liệt kê ngắn gọn 3-5 mục tiêu</li>
+                            <li><strong>Vấn đề & Hỗ trợ cần:</strong> Ghi rõ ràng (ai/điều kiện cần) để quản lý dễ phê duyệt.</li>
+                            <li><strong>Đính kèm:</strong> file, ảnh bằng nút Upload (nếu có) — tên file rõ ràng (VD: BC_Tuan35_KeToan.xlsx)</li>
+                        </ul>
+                    </li>
+
+                    <li class="mt-3">
+                        <strong>Lưu & Gửi:</strong>
+                        <ul>
+                            <li>Nhấn <em>Lưu</em> để lưu nháp hoặc <em>Gửi</em> (nếu có) tuỳ tính năng hệ thống.</li>
+                            <li>Sau khi gửi, báo cáo sẽ vào danh sách chờ phê duyệt (quản lý sẽ nhận thông báo).</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <div class="mt-3">
+                    <h6 class="mb-2">Ví dụ ngắn (mô tả trong ô nội dung)</h6>
+                    <div class="border rounded-3 p-3" style="background:#fbfdff">
+                        <strong>Tiêu đề:</strong> Báo cáo tuần - Tuần 35 - Nguyễn Văn A<br />
+                        <strong>Công việc đã hoàn thành:</strong>
+                        <ul>
+                            <li>Hoàn thành import 200 sản phẩm lên hệ thống (KPI: 200/200)</li>
+                            <li>Fix bug đăng nhập (PR #123)</li>
+                        </ul>
+                        <strong>Kế hoạch tuần sau:</strong>
+                        <ul><li>Hoàn thiện feature export báo cáo</li></ul>
+                        <strong>Vấn đề & Hỗ trợ cần:</strong>
+                        <ul><li>Cần tài khoản FTP từ DevOps để đồng bộ file</li></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW & EDIT -->
+            <div class="card card-guide p-4 mb-4" id="viewedit">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-badge">2</div>
+                    <h5 class="mb-0">Xem & Sửa báo cáo</h5>
+                </div>
+
+                <p>Danh sách báo cáo hiển thị tất cả báo cáo của bạn (và các báo cáo bạn có quyền xem). Hướng dẫn thao tác:</p>
+                <ul>
+                    <li><strong>Vào danh sách:</strong> <a asp-controller="BaoCao" asp-action="Index">Báo cáo tuần → Danh sách</a></li>
+                    <li><strong>Tìm kiếm / Lọc:</strong> Dùng ô tìm kiếm (tên, tuần), hoặc filter theo trạng thái (Draft / Submitted / Approved).</li>
+                    <li><strong>Mở xem chi tiết:</strong> Click vào tiêu đề để mở màn hình xem chi tiết.</li>
+                    <li><strong>Sửa báo cáo:</strong> Nếu báo cáo đang ở trạng thái <em>Draft</em> hoặc hệ thống cho phép, nhấn <em>Sửa</em> (Edit) → chỉnh sửa → <em>Cập nhật</em>.</li>
+                    <li><strong>Ghi chú quan trọng:</strong> Nếu báo cáo đã được phê duyệt, bạn cần liên hệ quản lý để yêu cầu chỉnh sửa hoặc hủy phê duyệt.</li>
+                </ul>
+
+                <div class="mt-2 muted-note">
+                    Ví dụ URL (tham khảo): <code>/BaoCao/Index</code> → <code>/BaoCao/Edit/{id}</code>
+                </div>
+            </div>
+
+            <!-- RULES -->
+            <div class="card card-guide p-4 mb-4" id="rules">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-badge">3</div>
+                    <h5 class="mb-0">Quy tắc & Mẹo viết báo cáo</h5>
+                </div>
+
+                <ul>
+                    <li><strong>Ngắn gọn & Rõ ràng:</strong> Ưu tiên bullet points, mỗi dòng 1 ý.</li>
+                    <li><strong>Thông số cụ thể:</strong> Nếu có số liệu — nêu số và mục tiêu (ví dụ: Test case: 30/30).</li>
+                    <li><strong>Đặt tiêu đề chuẩn:</strong> "Báo cáo tuần - Tuần {SỐ} - Họ Tên" giúp quản lý tìm nhanh.</li>
+                    <li><strong>Đính kèm:</strong> Đặt tên chuẩn cho file; tránh upload file có tên lộn xộn.</li>
+                    <li><strong>Thời hạn:</strong> Nộp báo cáo chậm nhất vào thứ 2 đầu tuần (theo quy định công ty).</li>
+                </ul>
+
+                <div class="mt-3">
+                    <h6>Phím tắt (mẹo)</h6>
+                    <ul>
+                        <li><strong>Alt + N</strong>: Tạo báo cáo mới</li>
+                        <li><strong>Ctrl + K</strong>: Focus ô tìm kiếm (nếu trang danh sách có ô tìm kiếm)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- TEMPLATE -->
+            <div class="card card-guide p-4 mb-4" id="template">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-badge">4</div>
+                    <h5 class="mb-0">Mẫu báo cáo (copy / download)</h5>
+                </div>
+
+                <p class="mb-2">Copy mẫu bên dưới để dán vào ô nội dung báo cáo hoặc tải về file `.md`.</p>
+
+                <div class="mb-3">
+                    <pre id="reportTemplate" class="template" aria-label="Mẫu báo cáo">
+# Báo cáo tuần - Tuần XX - [Họ tên]
+
+**Thời gian:** 2025-09-15 → 2025-09-21
+
+## 1. Công việc đã hoàn thành
+- [ ] Hoàn thành import 200 sản phẩm (KPI: 200/200)
+- [ ] Fix bug đăng nhập (PR #123)
+
+## 2. Kế hoạch tuần tới
+- [ ] Hoàn thiện feature export báo cáo
+- [ ] Viết unit test cho module X
+
+## 3. Vấn đề & Hỗ trợ cần
+- Cần tài khoản FTP từ DevOps để đồng bộ file
+- Cần confirm API endpoint từ team backend
+
+## 4. Số liệu (nếu có)
+- Số sản phẩm: 200
+- Tỉ lệ thành công: 100%
+
+## 5. File đính kèm
+- BC_Tuan35_KeToan.xlsx
+                    </pre>
+
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-outline-secondary btn-ghost" onclick="copyTemplate()">Sao chép mẫu</button>
+                        <button class="btn btn-sm btn-primary" onclick="downloadTemplate()">Tải về (.md)</button>
+                        <button class="btn btn-sm btn-ghost" onclick="printTemplate()">In nhanh</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LOGOUT -->
+            <div class="card card-guide p-4 mb-4" id="logout">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-badge">5</div>
+                    <h5 class="mb-0">Đăng xuất an toàn</h5>
+                </div>
+
+                <p>Bảo mật thông tin cá nhân & công ty: luôn đăng xuất khi dùng xong, đặc biệt nếu sử dụng máy công cộng.</p>
+
+                <ol>
+                    <li>Nhấn nút <strong>Đăng xuất</strong> trên góc phải (menu người dùng).</li>
+                    <li>Hệ thống sẽ hỏi xác nhận — xác nhận để kết thúc session.</li>
+                    <li>Nếu bạn muốn tự động làm sạch, sau logout hãy xóa cache trình duyệt hoặc đóng tab.</li>
+                </ol>
+
+                <div class="mt-3">
+                    <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" onsubmit="return confirmLogout();">
+                        <button type="submit" class="btn btn-danger">Đăng xuất</button>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary ms-2">Quay lại</a>
+                    </form>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="card card-guide p-4 mb-4" id="faq">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-badge">?</div>
+                    <h5 class="mb-0">FAQ & Khắc phục sự cố</h5>
+                </div>
+
+                <h6>Q: Tôi không thấy nút Tạo báo cáo?</h6>
+                <p class="muted-note">A: Kiểm tra phân quyền. Nếu bạn là nhân viên bình thường, nút nằm ở menu bên trái hoặc trang Dashboard.</p>
+
+                <h6>Q: Upload file thất bại?</h6>
+                <p class="muted-note">A: Kiểm tra dung lượng (<10MB), tên file không chứa ký tự lạ, thử đổi trình duyệt.</p>
+
+                <h6>Q: Tôi đã gửi nhưng muốn sửa?</h6>
+                <p class="muted-note">A: Nếu báo cáo ở trạng thái Draft thì có thể sửa. Nếu đã Approved, liên hệ quản lý để mở chỉnh sửa.</p>
+            </div>
+
+            <!-- SUPPORT -->
+            <div class="card card-guide p-4 mb-4" id="support">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-badge">!</div>
+                    <h5 class="mb-0">Liên hệ hỗ trợ</h5>
+                </div>
+
+                <p class="mb-1">Nếu vẫn gặp vấn đề, gửi email tới <strong>it-support@yourcompany.vn</strong> hoặc mở ticket nội bộ. Khi gửi ticket, kèm:</p>
+                <ul>
+                    <li>Ảnh chụp màn hình (screenshot)</li>
+                    <li>Mô tả chi tiết bước thực hiện</li>
+                    <li>Thời gian xảy ra lỗi</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Copy template to clipboard
+        function copyTemplate() {
+            const txt = document.getElementById('reportTemplate').innerText;
+            if (!navigator.clipboard) {
+                // fallback
+                const ta = document.createElement('textarea');
+                ta.value = txt;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                alert('Mẫu đã được sao chép.');
+                return;
+            }
+            navigator.clipboard.writeText(txt).then(() => {
+                alert('Mẫu đã được sao chép vào clipboard.');
+            }, () => {
+                alert('Không thể sao chép. Vui lòng copy thủ công.');
+            });
+        }
+
+        // Download template as file
+        function downloadTemplate() {
+            const txt = document.getElementById('reportTemplate').innerText;
+            const blob = new Blob([txt], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'mau_bao_cao_tuan.md';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        // Print template
+        function printTemplate() {
+            const content = document.getElementById('reportTemplate').innerText;
+            const w = window.open('', '_blank');
+            w.document.write('<pre style="font-family:Segoe UI, Roboto; font-size:14px;">' + escapeHtml(content) + '</pre>');
+            w.document.close();
+            w.print();
+            w.close();
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // Shortcuts (Alt+N -> create; Ctrl+K -> focus search if exists)
+        document.addEventListener('keydown', function (e) {
+            if (e.altKey && e.key.toLowerCase() === 'n') {
+                window.location.href = '@Url.Action("Create", "BaoCao")';
+            }
+            if (e.ctrlKey && e.key.toLowerCase() === 'k') {
+                const s = document.getElementById('searchBox');
+                if (s) { s.focus(); e.preventDefault(); }
+            }
+        });
+
+        // Confirm logout
+        function confirmLogout() {
+            return confirm('Bạn có chắc chắn muốn đăng xuất?');
+        }
+
+        // Smooth scroll for TOC links
+        document.querySelectorAll('.toc .nav-link').forEach(function (el) {
+            el.addEventListener('click', function (ev) {
+                ev.preventDefault();
+                document.querySelectorAll('.toc .nav-link').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+                const id = el.getAttribute('href');
+                const target = document.querySelector(id);
+                if (target) {
+                    window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 90, behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+}
+
+
+
+=================================================================================
+
+
+@{
+    Layout = "_Layout";
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var isAdmin = User.IsInRole("Admin");
+    var isManager = User.IsInRole("TruongPhong") || User.IsInRole("GiamDoc");
+}
+
+<!-- UserGuideView.cshtml - Hướng dẫn sử dụng hệ thống báo cáo tuần -->
+<div class="container py-4">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="display-6">Hướng dẫn sử dụng hệ thống Báo cáo tuần</h1>
+            <p class="text-muted">Trang này hướng dẫn chi tiết cách dùng hệ thống cho từng vai trò: <strong>Nhân viên</strong>, <strong>Trưởng phòng</strong>, và <strong>Admin</strong>. Đọc theo thứ tự "Bắt đầu nhanh" → "Chi tiết từng bước" → "Quản trị" để hiểu đầy đủ.</p>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" onclick="window.print()"><i class="fas fa-print me-1"></i>In / Xuất PDF</button>
+                <a class="btn btn-outline-secondary btn-sm" href="#toc"><i class="fas fa-list me-1"></i>Mục lục</a>
+                <a class="btn btn-outline-success btn-sm" href="#quickstart"><i class="fas fa-rocket me-1"></i>Bắt đầu nhanh</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- LEFT: TOC -->
+        <div class="col-lg-3 mb-4">
+            <div class="card sticky-top" style="top:100px">
+                <div class="card-body p-3">
+                    <h6 id="toc">Mục lục</h6>
+                    <ul class="nav flex-column small">
+                        <li class="nav-item"><a class="nav-link" href="#quickstart">Bắt đầu nhanh (1 phút)</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#create">1. Tạo báo cáo tuần</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#edit">2. Sửa báo cáo trước chốt</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#viewpast">3. Xem báo cáo đã gửi</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#manager">4. Quy trình Trưởng phòng</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#admin">5. Quy trình Admin</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#roles">6. Quyền & vai trò</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#faq">FAQ & Khắc phục sự cố</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#contact">Liên hệ hỗ trợ</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Content -->
+        <div class="col-lg-9">
+            <!-- Quickstart -->
+            <div id="quickstart" class="card mb-4">
+                <div class="card-body">
+                    <h4>Bắt đầu nhanh (3 bước)</h4>
+                    <ol>
+                        <li><strong>Đăng nhập</strong> bằng tài khoản công ty tại nút <em>Đăng nhập</em> (góc phải trên cùng).</li>
+                        <li><strong>Vào mục "Báo cáo tuần"</strong> → chọn tuần (ví dụ: Y25W28) → nhấn <em>Thêm dòng</em> để nhập nhiệm vụ.</li>
+                        <li>Chọn <strong>Trách nhiệm chính</strong>, <strong>Người nhận báo cáo</strong> (cấp trên). Sau khi hoàn tất, nhấn <em>Gửi</em>.</li>
+                    </ol>
+                    <div class="alert alert-info small">Ghi chú: Nếu bạn chưa thấy nút "Báo cáo tuần", hãy kiểm tra tài khoản đã đăng nhập chưa hoặc liên hệ quản trị viên.</div>
+                </div>
+            </div>
+
+            <!-- 1. Create -->
+            <div id="create" class="card mb-4">
+                <div class="card-body">
+                    <h4>1. Tạo báo cáo tuần (chi tiết)</h4>
+                    <p>Mỗi báo cáo tuần bao gồm nhiều dòng (nhiệm vụ). Mỗi dòng có các trường: <strong>Nội dung</strong>, <strong>Ngày hoàn thành</strong>, <strong>Trách nhiệm chính</strong>, <strong>Trách nhiệm hỗ trợ</strong>, <strong>Mức độ ưu tiên</strong> (A/B/C), <strong>Tiến độ</strong> (Đã hoàn thành / Chưa hoàn thành), và <strong>Ghi chú</strong>.</p>
+
+                    <h6>Các bước chi tiết</h6>
+                    <ol>
+                        <li>Vào <strong>Báo cáo tuần &gt; Lập báo cáo mới</strong>.</li>
+                        <li>Chọn tuần (dropdown) — hệ thống sẽ tự hiển thị khoảng thời gian từ ngày → đến ngày.</li>
+                        <li>Nhấn <em>Thêm dòng</em> để tạo nhiệm vụ mới. Điền <strong>Nội dung</strong> (bắt buộc), <strong>Trách nhiệm chính</strong> (bắt buộc), và <strong>Tiến độ</strong> (bắt buộc).</li>
+                        <li>Nếu cần, chọn <strong>Trách nhiệm hỗ trợ</strong> hoặc <strong>Ngày hoàn thành</strong>.</li>
+                        <li>Chọn <strong>Người nhận báo cáo</strong> (cấp trên) — hệ thống sẽ liệt kê theo mã phòng ban nếu bạn chọn trước mã phòng ban.</li>
+                        <li>Nhấn <em>Xem trước</em> để kiểm tra lại — chức năng này cho phép bạn xem toàn bộ báo cáo trước khi gửi.</li>
+                        <li>Nhấn <em>Gửi</em>. Sau khi gửi, bạn vẫn có thể <em>chỉnh sửa</em> trước khi đạt deadline chốt (xem phần sửa báo cáo).</li>
+                    </ol>
+
+                    <h6>Tip nhanh</h6>
+                    <ul>
+                        <li>Sử dụng <strong>Enter</strong> để xuống dòng trong ô Nội dung; hệ thống tự dãn chiều cao ô.</li>
+                        <li>Để sao chép một dòng tương tự: dùng chức năng "Nhân bản dòng" (nếu được bật) hoặc copy/paste nội dung.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2. Edit before deadline -->
+            <div id="edit" class="card mb-4">
+                <div class="card-body">
+                    <h4>2. Chỉnh sửa báo cáo trước khi chốt</h4>
+                    <p>Nếu bạn gửi báo cáo nhưng chưa đạt tới thời hạn chốt, bạn vẫn có thể sửa:</p>
+                    <ol>
+                        <li>Vào <strong>Báo cáo tuần &gt; Xem dữ liệu đã báo cáo</strong>.</li>
+                        <li>Tìm báo cáo cần sửa → nhấn <em>Chỉnh sửa</em> (nếu trạng thái là "Chưa duyệt").</li>
+                        <li>Sửa nội dung, cập nhật tiến độ, rồi nhấn <em>Cập nhật</em>.</li>
+                    </ol>
+                    <div class="alert alert-warning">Nếu báo cáo đã được duyệt bởi cấp trên, bạn sẽ không thể sửa. Liên hệ để yêu cầu cấp trên hoàn duyệt nếu cần thay đổi.</div>
+                </div>
+            </div>
+
+            <!-- 3. View past -->
+            <div id="viewpast" class="card mb-4">
+                <div class="card-body">
+                    <h4>3. Xem lại báo cáo đã gửi</h4>
+                    <p>Truy cập: <strong>Báo cáo tuần &gt; Xem dữ liệu đã báo cáo</strong>. Tại đây bạn có thể:</p>
+                    <ul>
+                        <li>Xem lịch sử báo cáo theo tuần.</li>
+                        <li>Tìm kiếm theo từ khóa (nội dung, người nhận, trạng thái).</li>
+                        <li>Xuất ra PDF hoặc Excel (nếu bạn có quyền Export).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 4. Manager -->
+            <div id="manager" class="card mb-4">
+                <div class="card-body">
+                    <h4>4. Quy trình dành cho Trưởng phòng / Cấp trên</h4>
+                    <p>Vai trò này có thêm quyền để xem, yêu cầu chỉnh sửa, duyệt hoặc trả về báo cáo:</p>
+                    <ul>
+                        <li>Xem toàn bộ báo cáo nhân viên trong phòng.</li>
+                        <li>Ghi chú, yêu cầu chỉnh sửa (comment), và đánh dấu <em>Đã hoàn thành</em>.</li>
+                        <li>Export PDF/Excel để tổng hợp báo cáo phòng.</li>
+                    </ul>
+
+                    <h6>Hướng dẫn duyệt</h6>
+                    <ol>
+                        <li>Vào <strong>Trạng thái</strong> hoặc <strong>Danh sách báo cáo</strong>.</li>
+                        <li>Chọn báo cáo cần duyệt → nhấn <em>Chi tiết</em>.</li>
+                        <li>Kiểm tra từng dòng; để lại ghi chú nếu cần.</li>
+                        <li>Nhấn <em>Duyệt</em> (hoặc <em>Yêu cầu chỉnh sửa</em> để trả về cho nhân viên).</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- 5. Admin -->
+            <div id="admin" class="card mb-4">
+                <div class="card-body">
+                    <h4>5. Quy trình dành cho Admin</h4>
+                    <p>Admin quản lý người dùng, phân quyền và phòng ban:</p>
+                    <ul>
+                        <li><strong>Tạo nhân viên:</strong> TaiKhoan &gt; Tạo nhân viên, điền thông tin cơ bản, gán phòng ban và vai trò.</li>
+                        <li><strong>Danh sách nhân viên:</strong> Quản lý, reset mật khẩu, kích hoạt/khoá tài khoản.</li>
+                        <li><strong>Phòng ban:</strong> Tạo, sửa, xóa mã phòng ban; đảm bảo mã phòng ban khớp với danh sách người dùng.</li>
+                        <li><strong>Tạo Admin:</strong> Chỉ dành cho Admin cấp cao; gán role Admin cho user.</li>
+                    </ul>
+
+                    <h6>Mẹo bảo mật</h6>
+                    <ol>
+                        <li>Luôn dùng mật khẩu mạnh và 2FA (nếu có thể).</li>
+                        <li>Không chia sẻ tài khoản admin cho người khác.</li>
+                        <li>Kiểm tra log đăng nhập khi nghi ngờ có hành vi bất thường.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- 6. Roles -->
+            <div id="roles" class="card mb-4">
+                <div class="card-body">
+                    <h4>6. Ma trận quyền (tóm tắt)</h4>
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Chức năng</th>
+                                <th>Nhân viên</th>
+                                <th>Trưởng phòng</th>
+                                <th>Admin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Tạo báo cáo</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>Chỉnh sửa trước chốt</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>Duyệt / Yêu cầu chỉnh sửa</td><td>-</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>Tạo nhân viên</td><td>-</td><td>-</td><td>✓</td></tr>
+                            <tr><td>Quản lý phòng ban</td><td>-</td><td>-</td><td>✓</td></tr>
+                            <tr><td>Xuất Excel/PDF</td><td>- (tuỳ cấu hình)</td><td>✓</td><td>✓</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div id="faq" class="card mb-4">
+                <div class="card-body">
+                    <h4>FAQ & Khắc phục sự cố</h4>
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq1">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                    Tôi không thấy mục "Báo cáo tuần" sau khi đăng nhập
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small">
+                                    Kiểm tra: bạn đã đăng nhập đúng tài khoản chưa; tài khoản có được gán role phù hợp không; liên hệ Admin để kiểm tra phòng ban/role.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                    Làm sao để xuất báo cáo ra Excel/PDF?
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small">
+                                    Truy cập trang <strong>Trạng thái</strong> hoặc <strong>Xem dữ liệu đã báo cáo</strong>, chọn bộ lọc tuần/phòng, nhấn <em>Xuất</em>. Nếu không thấy nút, kiểm tra quyền của bạn.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq3">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                    Báo cáo đã gửi không thể chỉnh sửa
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small">
+                                    Nếu báo cáo đã được duyệt, hệ thống khóa chỉnh sửa. Yêu cầu Trưởng phòng mở lại (hoàn duyệt) nếu cần thay đổi.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div id="contact" class="card mb-4">
+                <div class="card-body">
+                    <h4>Liên hệ hỗ trợ</h4>
+                    <p>Nếu gặp vấn đề, vui lòng liên hệ:</p>
+                    <ul>
+                        <li><strong>Admin hệ thống:</strong> admin@company.local</li>
+                        <li><strong>Phòng IT:</strong> it-support@company.local</li>
+                        <li><strong>Hotline nội bộ:</strong> +84 123 456 789</li>
+                    </ul>
+
+                    <h6>Gửi phản hồi</h6>
+                    <p>Nếu bạn có góp ý cải tiến giao diện/flow, nhấn nút dưới để gửi phản hồi vào hệ thống ticket.</p>
+                    <a class="btn btn-outline-primary btn-sm" asp-controller="Feedback" asp-action="Create"><i class="fas fa-comment-dots me-1"></i>Gửi phản hồi</a>
+                </div>
+            </div>
+
+            <!-- Printable checklist -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Checklist nhanh (In ra để dùng hàng tuần)</h5>
+                    <ol>
+                        <li>Chọn tuần đúng (ví dụ: Y25W28).</li>
+                        <li>Thêm tất cả nhiệm vụ đã làm trong tuần.</li>
+                        <li>Gán Trách nhiệm chính và tiến độ cho từng dòng.</li>
+                        <li>Chọn người nhận (cấp trên) và kiểm tra thông tin.</li>
+                        <li>Nhấn "Xem trước" → kiểm tra kỹ → "Gửi".</li>
+                    </ol>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Smooth scroll cho anchor links
+        document.querySelectorAll('a.nav-link[href^="#"]').forEach(function (a) {
+            a.addEventListener('click', function (e) {
+                e.preventDefault();
+                var target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+}
+
+
+
+========================================================================
+@{
+    ViewData["Title"] = "Hướng dẫn sử dụng hệ thống báo cáo tuần";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">
+            <i class="fas fa-book-open me-2"></i> Hướng dẫn sử dụng hệ thống báo cáo tuần
+        </h1>
+        <p class="text-muted fs-5">
+            Đây là hệ thống được thiết kế để <strong>nhân viên báo cáo công việc hàng tuần</strong>,
+            <strong>cấp trên duyệt báo cáo</strong> và <strong>ban giám đốc theo dõi thống kê</strong>.
+        </p>
+    </div>
+
+    <!-- Video hướng dẫn -->
+    <div class="mb-5 text-center">
+        <div class="ratio ratio-16x9 shadow rounded">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    title="Video hướng dẫn" allowfullscreen></iframe>
+        </div>
+        <p class="text-muted mt-2">🎬 Xem video để hiểu rõ cách sử dụng hệ thống.</p>
+    </div>
+
+    <!-- Các bước sử dụng -->
+    <div class="row g-4">
+        <!-- Bước 1 -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 rounded-4 hover-card">
+                <div class="card-body">
+                    <h5 class="fw-bold text-primary"><i class="fas fa-sign-in-alt me-2"></i>Bước 1: Đăng nhập</h5>
+                    <p class="text-muted">
+                        - Truy cập trang đăng nhập bằng tài khoản công ty.<br />
+                        - Nếu quên mật khẩu, liên hệ bộ phận IT để được cấp lại.<br />
+                        - Sau khi đăng nhập, bạn sẽ thấy menu <strong>Báo cáo tuần</strong>.
+                    </p>
+                    <img src="~/images/tutorial-login.png" alt="Đăng nhập minh họa"
+                         class="img-fluid rounded shadow-sm mt-3" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Bước 2 -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 rounded-4 hover-card">
+                <div class="card-body">
+                    <h5 class="fw-bold text-success"><i class="fas fa-calendar-plus me-2"></i>Bước 2: Lập báo cáo tuần</h5>
+                    <p class="text-muted">
+                        - Chọn mục <strong>"Lập kế hoạch tuần"</strong>.<br />
+                        - Nhập nội dung công việc, người chịu trách nhiệm chính và tiến độ.<br />
+                        - Có thể thêm nhiều dòng báo cáo cho từng công việc.<br />
+                        - Nhấn <strong>Lưu</strong> để gửi cho cấp trên.
+                    </p>
+                    <img src="~/images/tutorial-create.png" alt="Lập báo cáo minh họa"
+                         class="img-fluid rounded shadow-sm mt-3" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Bước 3 -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 rounded-4 hover-card">
+                <div class="card-body">
+                    <h5 class="fw-bold text-warning"><i class="fas fa-history me-2"></i>Bước 3: Kiểm tra báo cáo đã gửi</h5>
+                    <p class="text-muted">
+                        - Vào mục <strong>"Xem dữ liệu đã báo cáo"</strong>.<br />
+                        - Kiểm tra trạng thái: <span class="badge bg-success">Đã duyệt</span> hoặc <span class="badge bg-danger">Chưa duyệt</span>.<br />
+                        - Nếu chưa duyệt và còn trong thời hạn, bạn có thể <strong>chỉnh sửa</strong>.
+                    </p>
+                    <img src="~/images/tutorial-check.png" alt="Kiểm tra báo cáo minh họa"
+                         class="img-fluid rounded shadow-sm mt-3" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Bước 4 -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 rounded-4 hover-card">
+                <div class="card-body">
+                    <h5 class="fw-bold text-danger"><i class="fas fa-user-check me-2"></i>Bước 4: Duyệt báo cáo (dành cho cấp trên)</h5>
+                    <p class="text-muted">
+                        - Trưởng phòng hoặc Giám đốc vào mục <strong>"Quản lý báo cáo"</strong>.<br />
+                        - Xem báo cáo của nhân viên trong phòng ban.<br />
+                        - Có thể duyệt hoặc yêu cầu nhân viên chỉnh sửa.<br />
+                        - Giúp đảm bảo tiến độ công việc minh bạch và rõ ràng.
+                    </p>
+                    <img src="~/images/tutorial-approve.png" alt="Duyệt báo cáo minh họa"
+                         class="img-fluid rounded shadow-sm mt-3" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="alert alert-info border-0 rounded-4 shadow-sm mt-5">
+        <i class="fas fa-lightbulb me-2"></i>
+        <strong>Lưu ý:</strong> Hãy nộp báo cáo sớm trước hạn chốt (ví dụ: thứ 6 hàng tuần) để cấp trên duyệt kịp thời.
+    </div>
+</div>
+
+<!-- CSS riêng -->
+<style>
+    .hover-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+</style>

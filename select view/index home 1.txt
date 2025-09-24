@@ -1,0 +1,68 @@
+@{
+    ViewData["Title"] = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/home.css" />
+
+<!-- HERO -->
+<div class="hero">
+    <div class="container">
+        <div class="hero-text">
+            <h1>Báo Cáo Tuần Dễ Dàng & Hiệu Quả</h1>
+            <p>Giúp nhân viên lập kế hoạch, báo cáo tiến độ, và giúp cấp trên theo dõi, duyệt báo cáo nhanh chóng.</p>
+            <a href="/BaoCaoTuan" class="btn btn-cta">
+                <i class="fas fa-clipboard-list me-2"></i> Lập báo cáo tuần
+            </a>
+        </div>
+        <div class="hero-illustration">
+            <img src="~/images/2.jpg" alt="Weekly Report Illustration">
+            <img src="~/images/3.jpg" alt="Weekly Report Illustration">
+        </div>
+    </div>
+</div>
+
+<!-- FEATURES -->
+<div class="container features">
+    <div class="row text-center g-4">
+        <div class="col-md-3">
+            <div class="card card-feature p-4">
+                <i class="fas fa-pencil-alt"></i>
+                <h5>Lập Kế Hoạch</h5>
+                <p>Nhân viên nhập công việc dự kiến làm trong tuần, có thể chỉnh sửa trước khi chốt.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-feature p-4">
+                <i class="fas fa-tasks"></i>
+                <h5>Báo Cáo</h5>
+                <p>Cập nhật tiến độ từng nhiệm vụ, đánh dấu hoàn thành và thêm ghi chú chi tiết.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-feature p-4">
+                <i class="fas fa-user-check"></i>
+                <h5>Duyệt</h5>
+                <p>Cấp trên xem xét, duyệt hoặc yêu cầu chỉnh sửa báo cáo trước khi kết thúc tuần.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-feature p-4">
+                <i class="fas fa-chart-line"></i>
+                <h5>Thống Kê</h5>
+                <p>Xem thống kê hiệu suất cá nhân, phòng ban và toàn công ty theo từng tuần.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA -->
+<div class="container">
+    <div class="cta-section">
+        <h2>Bắt đầu báo cáo tuần ngay hôm nay</h2>
+        <p>Tối ưu hóa quy trình quản lý công việc, tiết kiệm thời gian và giúp cả đội ngũ đồng bộ mục tiêu.</p>
+        <a href="/BaoCaoTuan" class="btn btn-main">
+            <i class="fas fa-rocket me-2"></i> Tạo báo cáo đầu tiên
+        </a>
+    </div>
+</div>
